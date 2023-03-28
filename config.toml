@@ -1,0 +1,7 @@
+name = "ChessVision"
+
+[render_settings]
+OUTPUT_DIR = './images/'
+RES_X = 512
+RES_Y = 512
+FILE_TYPE = 'JPEG'

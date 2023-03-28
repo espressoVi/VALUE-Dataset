@@ -3,6 +3,7 @@ logs/
 previews/*
 assets/*
 textures/*
+images/*
 *.blend
 *.blend1
 
