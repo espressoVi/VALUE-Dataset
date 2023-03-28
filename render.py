@@ -2,6 +2,7 @@ import bpy
 import toml
 import os
 import sys
+import numpy as np
 from contextlib import contextmanager
 
 config_dict = toml.load('config.toml')
@@ -22,14 +23,23 @@ def stdout_redirected(to=os.devnull):
             _redirect_stdout(to=old_stdout)
 
 def render_scene(filename):
-    _settings = config_dict['render_settings']
+    _settings = config_dict['scene']
     bpy.context.scene.render.image_settings.file_format=_settings['FILE_TYPE']
     bpy.context.scene.render.filepath = os.path.join(_settings['OUTPUT_DIR'],filename)
     bpy.context.scene.render.resolution_x = _settings['RES_X']
     bpy.context.scene.render.resolution_y = _settings['RES_Y']
     with stdout_redirected():
         bpy.ops.render.render(write_still=True)
-        bpy.ops.wm.quit_blender()
+    bpy.ops.wm.quit_blender()
 
 if __name__ == "__main__":
     render_scene("fuckyou.jpg")
+
+
+#def get_absolute():
+#    side = config_dict['scene']['side_length']
+#    for obj in config_dict['scene']['3d_objects']:
+#        print(obj)
+#        print(bpy.data.objects[obj].location/side)
+#    bpy.ops.wm.quit_blender()
+#

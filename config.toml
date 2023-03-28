@@ -1,7 +1,26 @@
 name = "ChessVision"
 
-[render_settings]
+[scene]
 OUTPUT_DIR = './images/'
 RES_X = 512
 RES_Y = 512
 FILE_TYPE = 'JPEG'
+3d_objects = ['B0','B1','N0','N1','K','Q','R0','R1','P0','P1','P2','P3','P4','P5','P6','P7',
+	'b0','b1','n0','n1','k','q','r0','r1','p0','p1','p2','p3','p4','p5','p6','p7',]
+side_length = 0.106768
+
+[board]
+	fen_pieces = ['P','N','B','R','Q','K', 'p', 'n', 'b', 'r', 'q', 'k']
+	[board.pieces]
+		empty = 0
+		pawn = 1
+		knight = 2
+		bishop = 3
+		rook = 4
+		queen = 5
+		king = 6
+	[board.color]
+		white = 0
+		black = 1
+[data]
+DATA_DIR = './data/'
