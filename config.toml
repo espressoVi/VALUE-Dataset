@@ -5,11 +5,12 @@ OUTPUT_DIR = './images/'
 RES_X = 512
 RES_Y = 512
 FILE_TYPE = 'JPEG'
-3d_objects = ['B0','B1','N0','N1','K','Q','R0','R1','P0','P1','P2','P3','P4','P5','P6','P7',
-	'b0','b1','n0','n1','k','q','r0','r1','p0','p1','p2','p3','p4','p5','p6','p7',]
 side_length = 0.106768
+z_board = 0.0009
+
 [data]
 DATA_DIR = './data/'
+MOVE_FILE = './temp/moves.json'
 
 [constants]
 EMPTY_DELIMITER = 'x'

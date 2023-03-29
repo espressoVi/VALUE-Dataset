@@ -4,6 +4,9 @@ import os
 import sys
 import numpy as np
 from contextlib import contextmanager
+from mathutils import Vector
+import json
+from tqdm import tqdm
 
 config_dict = toml.load('config.toml')
 
@@ -32,8 +35,26 @@ def render_scene(filename):
         bpy.ops.render.render(write_still=True)
     bpy.ops.wm.quit_blender()
 
+def read_moves():
+    with open(config_dict['data']['MOVE_FILE'], 'r') as f:
+        moves = json.load(f)
+    return moves
+
+def reset_all():
+    for i in bpy.data.objects.keys():
+        if len(i) == 2:
+            bpy.data.objects[i].location = Vector([0,0,-10]) 
+
+def apply_moves():
+    for i,moves in tqdm(enumerate(read_moves().values()),desc = "Rendering"):
+        reset_all()
+        for name, translation in moves.items():
+            piece = bpy.data.objects[name]
+            piece.location = Vector(translation)
+        render_scene(f'CV_{i:07d}.jpg')
+
 if __name__ == "__main__":
-    render_scene("fuckyou.jpg")
+    apply_moves()
 
 
 #def get_absolute():

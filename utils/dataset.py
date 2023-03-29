@@ -17,7 +17,7 @@ class BoardData:
         self._load_games()
         self._parse_games()
         self.dataset = np.array([self._create_array(board, self.EMPTY) for board in self.boards])
-        self.START = dataset._create_array(chess.STARTING_BOARD_FEN, self.EMPTY)
+        self.START = self._create_array(chess.STARTING_BOARD_FEN, self.EMPTY)
     def _load_games(self):
         datasets = [f for f in os.listdir(self.data_dir) if 'pgn' in f]
         for dataset in datasets:
@@ -49,10 +49,3 @@ class BoardData:
             final.append(np.array([config_dict['constants']['fen_pieces'][i] for i in list(new)]))
         final = np.array(final)
         return final
-
-
-def main():
-    dataset = BoardData()
-    
-if __name__ == "__main__":
-    main()

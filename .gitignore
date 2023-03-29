@@ -4,6 +4,7 @@ previews/*
 assets/*
 textures/*
 images/*
+temp/*
 *.blend
 *.blend1
 

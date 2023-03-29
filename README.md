@@ -1,8 +1,6 @@
 # Chess vision multi label classification task
 
 ## TODO
-* C1 - Compute absolute translations.
-* C2 - Get final scene.
 * C3 - Save images and corresponding label information.
 * Check  if scene works in 204 -> DOESN'T
 
@@ -12,6 +10,8 @@
 * B0 - PGN reading and converting to FEN (python-chess)
 * B1 - FEN to numpy array (save as npy) extract label information.
 * B2 - Create dataset.
+* C1 - Compute absolute translations.
+* C2 - Get final scene.
 
 ## Notes
 * Look at YOLO image models.
