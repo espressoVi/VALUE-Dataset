@@ -61,7 +61,6 @@ class Move:
 class Dataset:
     def __init__(self,):
         MAX = config_dict['data']['MAX_BOARDS']
-        MAX = 5000
         self.dataset = BoardData(MAX)
         self.mover = Move()
     def get_dataset(self):
