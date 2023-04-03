@@ -48,24 +48,31 @@ class Move:
     @staticmethod
     def _create_array(fen_board):
         nil = config_dict['constants']['EMPTY_DELIMITER']
+        piece_dict = config_dict['constants']['fen_pieces']
         final = []
         rank_array = fen_board.split()[0].split('/')
         for i,files in enumerate(rank_array):
             new = files
             for n in re.findall(r'[1-8]',files):
                 new = new.replace(n,nil*int(n))
-            final.append(np.array([config_dict['constants']['fen_pieces'][i] for i in list(new)]))
+            final.append(np.array([piece_dict[i] for i in list(new)]))
         return np.array(final)
 
 class Dataset:
     def __init__(self,):
-        self.dataset = BoardData()
+        MAX = config_dict['data']['MAX_BOARDS']
+        MAX = 5000
+        self.dataset = BoardData(MAX)
         self.mover = Move()
-        self.BATCH_SIZE = config_dict['data']['BATCH_SIZE'] 
     def get_dataset(self):
-        moves_dict = {}
-        for i,fen_board in enumerate(self.dataset.boards):
+        moves_dict, labels_dict = {},{}
+        unique_id = 0
+        for fen_board in tqdm(self.dataset):
             board, moves = self.mover.get_moves(fen_board)
-            moves_dict[i] = moves
-        with open(os.path.join(config_dict['data']['MOVE_DIR'], 'move.json'), 'w') as f:
+            moves_dict[unique_id] = moves
+            labels_dict[unique_id] = board.tolist()
+            unique_id+=1
+        with open(config_dict['data']['MOVE_FILE'], 'w') as f:
             json.dump(moves_dict, f, indent = 4)
+        with open(config_dict['data']['LABEL_FILE'], 'w') as f:
+            json.dump(labels_dict, f, indent = 4)

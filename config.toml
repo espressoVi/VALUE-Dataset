@@ -9,9 +9,10 @@ side_length = 0.106768
 z_board = 0.0009
 
 [data]
-DATA_DIR = './data/'
-MOVE_DIR = './cache/'
-BATCH_SIZE = 1000
+DATASET = './data/Jan23.pgn'
+MOVE_FILE = './cache/move.json'
+LABEL_FILE = './data/labels.json'
+#BATCH_SIZE = 1000
 MAX_BOARDS = 500000
 
 [constants]

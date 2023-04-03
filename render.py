@@ -25,42 +25,35 @@ def stdout_redirected(to=os.devnull):
         finally:
             _redirect_stdout(to=old_stdout)
 
-def render_scene(filename):
-    _settings = config_dict['scene']
-    bpy.context.scene.render.image_settings.file_format=_settings['FILE_TYPE']
-    bpy.context.scene.render.filepath = os.path.join(_settings['OUTPUT_DIR'],filename)
-    bpy.context.scene.render.resolution_x = _settings['RES_X']
-    bpy.context.scene.render.resolution_y = _settings['RES_Y']
-    with stdout_redirected():
-        bpy.ops.render.render(write_still=True)
-    bpy.ops.wm.quit_blender()
+class Renderer:
+    def __init__(self):
+        self._settings = config_dict['scene']
+        bpy.context.scene.render.image_settings.file_format=self._settings['FILE_TYPE']
+        bpy.context.scene.render.resolution_x = self._settings['RES_X']
+        bpy.context.scene.render.resolution_y = self._settings['RES_Y']
+        self.pieces = [i for i in bpy.data.objects.keys() if len(i) == 2]
+        self.hide = Vector([0,0,-10]) 
 
-def read_moves():
-    with open(os.path.join(config_dict['data']['MOVE_DIR'], "move.json"), 'r') as f:
-        moves = json.load(f)
-    return moves
+    def apply_moves(self):
+        for i,moves in tqdm(self._read_moves().items(), desc="Rendering"):
+            self._reset()
+            for name, translation in moves.items():
+                bpy.data.objects[name].location = Vector(translation)
+            self.render_scene(f'CV_{int(i):07d}.jpg')
+        bpy.ops.wm.quit_blender()
 
-def reset_all():
-    pieces = [i for i in bpy.data.objects.keys() if len(i) == 2]
-    hide = Vector([0,0,-10]) 
-    for piece in pieces:
-        bpy.data.objects[piece].location = hide
-
-def apply_moves():
-    for i,moves in tqdm(enumerate(read_moves().values()),desc = "Rendering"):
-        reset_all()
-        for name, translation in moves.items():
-            piece = bpy.data.objects[name]
-            piece.location = Vector(translation)
-        render_scene(f'CV_{i:07d}.jpg')
+    def render_scene(self,filename):
+        bpy.context.scene.render.filepath = os.path.join(self._settings['OUTPUT_DIR'],filename)
+        with stdout_redirected():
+            bpy.ops.render.render(write_still=True)
+    def _reset(self):
+        for piece in self.pieces:
+            bpy.data.objects[piece].location = self.hide
+    @staticmethod
+    def _read_moves():
+        with open(config_dict['data']['MOVE_FILE'], 'r') as f:
+            moves = json.load(f)
+        return moves
 
 if __name__ == "__main__":
-    apply_moves()
-
-#def get_absolute():
-#    side = config_dict['scene']['side_length']
-#    for obj in config_dict['scene']['3d_objects']:
-#        print(obj)
-#        print(bpy.data.objects[obj].location/side)
-#    bpy.ops.wm.quit_blender()
-#
+    Renderer().apply_moves()

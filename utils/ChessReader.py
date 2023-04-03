@@ -9,23 +9,30 @@ import chess.pgn
 config_dict = toml.load('config.toml')
 
 class BoardData:
-    def __init__(self, ):
-        self.data_dir = config_dict['data']['DATA_DIR']
-        self.boards = []
-        self._load_games()
-    def _load_games(self):
-        datasets = [f for f in os.listdir(self.data_dir) if 'pgn' in f]
-        for dataset in datasets:
-            with open(os.path.join(self.data_dir, dataset), 'r') as p:
-                progress_bar = tqdm(p, desc = "Loading boards")
-                for line in progress_bar:
-                    if '1.' in line and '{' not in line:
-                        game = chess.pgn.read_game(io.StringIO(line))
-                        self.boards.extend(self._parse_game(game))
-                        progress_bar.set_description(f"Loading boards ({len(self.boards)})")
-                        progress_bar.refresh()
-                    if len(self.boards) > config_dict['data']['MAX_BOARDS']:
-                        break
+    def __init__(self, MAX):
+        self.dataset = config_dict['data']['DATASET']
+        self.MAX = MAX
+    def __len__(self):
+        return self.MAX
+    def __iter__(self):
+        self.file = open(self.dataset, 'r')
+        self.count = 0
+        self.stack = []
+        return self
+    def __next__(self):
+        if self.count > self.MAX:
+            self.file.close()
+            raise StopIteration
+        if len(self.stack) > 0:
+            return self.stack.pop()
+        line = self.file.readline()
+        while '1.' not in line and '{' not in line:
+            line = self.file.readline()
+        game = chess.pgn.read_game(io.StringIO(line))
+        self.stack = self._parse_game(game)
+        self.count += len(self.stack)
+        return self.stack.pop()
+
     def _parse_game(self, game):
         result = []
         board = game.board()
