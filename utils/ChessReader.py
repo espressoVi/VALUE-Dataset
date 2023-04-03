@@ -17,10 +17,13 @@ class BoardData:
         datasets = [f for f in os.listdir(self.data_dir) if 'pgn' in f]
         for dataset in datasets:
             with open(os.path.join(self.data_dir, dataset), 'r') as p:
-                for line in tqdm(p, desc = "Loading games"):
+                progress_bar = tqdm(p, desc = "Loading boards")
+                for line in progress_bar:
                     if '1.' in line and '{' not in line:
                         game = chess.pgn.read_game(io.StringIO(line))
                         self.boards.extend(self._parse_game(game))
+                        progress_bar.set_description(f"Loading boards ({len(self.boards)})")
+                        progress_bar.refresh()
                     if len(self.boards) > config_dict['data']['MAX_BOARDS']:
                         break
     def _parse_game(self, game):
