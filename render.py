@@ -36,14 +36,15 @@ def render_scene(filename):
     bpy.ops.wm.quit_blender()
 
 def read_moves():
-    with open(config_dict['data']['MOVE_FILE'], 'r') as f:
+    with open(os.path.join(config_dict['data']['MOVE_DIR'], "move.json"), 'r') as f:
         moves = json.load(f)
     return moves
 
 def reset_all():
-    for i in bpy.data.objects.keys():
-        if len(i) == 2:
-            bpy.data.objects[i].location = Vector([0,0,-10]) 
+    pieces = [i for i in bpy.data.objects.keys() if len(i) == 2]
+    hide = Vector([0,0,-10]) 
+    for piece in pieces:
+        bpy.data.objects[piece].location = hide
 
 def apply_moves():
     for i,moves in tqdm(enumerate(read_moves().values()),desc = "Rendering"):
@@ -55,7 +56,6 @@ def apply_moves():
 
 if __name__ == "__main__":
     apply_moves()
-
 
 #def get_absolute():
 #    side = config_dict['scene']['side_length']

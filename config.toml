@@ -2,30 +2,18 @@ name = "ChessVision"
 
 [scene]
 OUTPUT_DIR = './images/'
+FILE_TYPE = 'JPEG'
 RES_X = 512
 RES_Y = 512
-FILE_TYPE = 'JPEG'
 side_length = 0.106768
 z_board = 0.0009
 
 [data]
 DATA_DIR = './data/'
-MOVE_FILE = './temp/moves.json'
+MOVE_DIR = './cache/'
+BATCH_SIZE = 1000
 
 [constants]
-EMPTY_DELIMITER = 'x'
 CHESS_BOARD_LEN = 8
-[constants.fen_pieces]
-	x = 0
-	P = 1
-	N = 2
-	B = 3
-	R = 4
-	Q = 5
-	K = 6
-	p = 7
-	n = 8
-	b = 9
-	r = 10
-	q = 11
-	k = 12
+EMPTY_DELIMITER = 'x'
+fen_pieces = {x = 0, P = 1, N = 2, B = 3, R = 4, Q = 5, K = 6, p = 7, n = 8, b = 9, r = 10, q = 11, k = 12}
