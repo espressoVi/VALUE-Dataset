@@ -26,7 +26,7 @@ class BoardData:
         if len(self.stack) > 0:
             return self.stack.pop()
         line = self.file.readline()
-        while '1.' not in line and '{' not in line:
+        while '1.' not in line or '[' in line:
             line = self.file.readline()
         game = chess.pgn.read_game(io.StringIO(line))
         self.stack = self._parse_game(game)
@@ -36,6 +36,8 @@ class BoardData:
     def _parse_game(self, game):
         result = []
         board = game.board()
+        if game.mainline_moves() is None:
+            return [board]
         for move in game.mainline_moves():
             result.append(board.fen())
             # ----FILTER---- Add filtration code here if necessary (e.g. unique boards only)
