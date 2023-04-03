@@ -12,6 +12,7 @@ z_board = 0.0009
 DATA_DIR = './data/'
 MOVE_DIR = './cache/'
 BATCH_SIZE = 1000
+MAX_BOARDS = 500000
 
 [constants]
 CHESS_BOARD_LEN = 8

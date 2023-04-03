@@ -21,6 +21,8 @@ class BoardData:
                     if '1.' in line and '{' not in line:
                         game = chess.pgn.read_game(io.StringIO(line))
                         self.boards.extend(self._parse_game(game))
+                    if len(self.boards) > config_dict['data']['MAX_BOARDS']:
+                        break
     def _parse_game(self, game):
         result = []
         board = game.board()
