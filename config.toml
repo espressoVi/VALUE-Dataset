@@ -11,7 +11,7 @@ z_board = 0.0009
 [data]
 DATASET = './data/Jan23.pgn'
 MOVE_FILE = './cache/move.json'
-LABEL_FILE = './data/labels.json'
+LABEL_FILE = './data/labels_all.json'
 MAX_BOARDS = 500000
 
 [constants]

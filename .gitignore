@@ -1,12 +1,11 @@
 data/*
 logs/
-previews/*
 assets/*
 textures/*
 images/*
 cache/*
-*.blend
 *.blend1
+statistics.py
 
 __pycache__/
 *.py[cod]
