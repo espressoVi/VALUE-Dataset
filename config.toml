@@ -9,10 +9,11 @@ side_length = 0.106768
 z_board = 0.0009
 
 [data]
-DATASET = './data/Jan23.pgn'
+DATASET = './data/Dec18.pgn'
 MOVE_FILE = './cache/move.json'
 LABEL_FILE = './data/labels_all.json'
-MAX_BOARDS = 500000
+FEN_FILE = './data/fen_all.json'
+MAX_BOARDS = 220000 
 
 [constants]
 CHESS_BOARD_LEN = 8

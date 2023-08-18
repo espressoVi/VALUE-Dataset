@@ -6,6 +6,7 @@ import toml
 import json
 from itertools import product
 from utils.ChessReader import BoardData
+from collections import OrderedDict
 
 config_dict = toml.load('config.toml')
 
@@ -30,9 +31,12 @@ class Move:
                 else:
                     piece_counter[piece] = 0
                 name = piece+str(piece_counter[piece])
-
                 moves[name] = (self.map[i][j]+jitter[i][j]).tolist()
+        moves['Camera'] = self._camera_jitter()
         return board, moves
+    def _camera_jitter(self):
+        x,z = np.random.uniform(0,2), min(0,np.random.normal(0.5,0.2))
+        return (x,z)
     def _add_position_jitter(self):
         result = np.random.normal(0,self.side_len/16,size = (self.board_dim, self.board_dim, 3))
         result[:,:,2] = 0
@@ -64,14 +68,18 @@ class Dataset:
         self.dataset = BoardData(MAX)
         self.mover = Move()
     def get_dataset(self):
-        moves_dict, labels_dict = {},{}
-        unique_id = 0
-        for fen_board in tqdm(self.dataset):
+        moves_dict, labels_dict, fen_dict = {},{},{}
+        unique_ids = list(range(len(self.dataset)))
+        np.random.shuffle(unique_ids)
+        for unique_id, fen_board in tqdm(zip(unique_ids, self.dataset), total = len(self.dataset)):
             board, moves = self.mover.get_moves(fen_board)
             moves_dict[unique_id] = moves
             labels_dict[unique_id] = board.tolist()
+            fen_dict[unique_id] = fen_board
             unique_id+=1
         with open(config_dict['data']['MOVE_FILE'], 'w') as f:
-            json.dump(moves_dict, f, indent = 4)
+            json.dump(OrderedDict(sorted(moves_dict.items())), f, indent = 2)
         with open(config_dict['data']['LABEL_FILE'], 'w') as f:
-            json.dump(labels_dict, f, indent = 4)
+            json.dump(OrderedDict(sorted(labels_dict.items())), f, indent = 2)
+        with open(config_dict['data']['FEN_FILE'], 'w') as f:
+            json.dump(OrderedDict(sorted(fen_dict.items())), f, indent = 2)

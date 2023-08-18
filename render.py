@@ -1,5 +1,5 @@
 import bpy
-import toml
+#import toml
 import os
 import sys
 import numpy as np
@@ -8,7 +8,9 @@ from mathutils import Vector
 import json
 from time import perf_counter
 
-config_dict = toml.load('config.toml')
+config_dict = {}
+config_dict['data'] = {'MOVE_FILE':'./cache/move.json'} 
+config_dict['scene'] = {"OUTPUT_DIR":'./images/', "FILE_TYPE":'JPEG', "RES_X":512, "RES_Y":512, "side_length":0.106768, "z_board":0.0009}
 
 @contextmanager
 def stdout_redirected(to=os.devnull):
@@ -32,16 +34,20 @@ class Renderer:
         bpy.context.scene.render.resolution_x = self._settings['RES_X']
         bpy.context.scene.render.resolution_y = self._settings['RES_Y']
         self.pieces = [i for i in bpy.data.objects.keys() if len(i) == 2]
+        self.camera = bpy.data.objects['Camera']
+        self.R = self.camera.location.length
         self.hide = Vector([0,0,-10]) 
         self.low = low
         self.high = high
-
     def apply_moves(self):
         g_start = perf_counter()
         for i,moves in self._read_moves().items():
             start = perf_counter()
             self._reset()
+            self.update_camera(*moves['Camera'])
             for name, translation in moves.items():
+                if name == "Camera":
+                    continue
                 bpy.data.objects[name].location = Vector(translation)
             self.render_scene(f'CV_{int(i):07d}.jpg')
             end = perf_counter()
@@ -49,11 +55,16 @@ class Renderer:
         print()
         bpy.ops.wm.quit_blender()
 
+    def update_camera(self, X, Z):
+        self.camera.location.x += X/self.R
+        self.camera.location.z += Z/self.R
+
     def render_scene(self,filename):
         bpy.context.scene.render.filepath = os.path.join(self._settings['OUTPUT_DIR'],filename)
         with stdout_redirected():
             bpy.ops.render.render(write_still=True)
     def _reset(self):
+        self.camera.location = Vector((-1.93420338, -1.87062883, 1.70655179))
         for piece in self.pieces:
             bpy.data.objects[piece].location = self.hide
     def _read_moves(self):
