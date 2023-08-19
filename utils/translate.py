@@ -35,7 +35,7 @@ class Move:
         moves['Camera'] = self._camera_jitter()
         return board, moves
     def _camera_jitter(self):
-        x,z = np.random.uniform(0,2), min(0,np.random.normal(0.5,0.2))
+        x,z = np.random.uniform(0,2), max(0,np.random.normal(0.5,0.2))
         return (x,z)
     def _add_position_jitter(self):
         result = np.random.normal(0,self.side_len/16,size = (self.board_dim, self.board_dim, 3))
