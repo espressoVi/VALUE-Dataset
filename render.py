@@ -9,7 +9,7 @@ import json
 from time import perf_counter
 
 config_dict = {}
-config_dict['data'] = {'MOVE_FILE':'./cache/move.json'} 
+config_dict['data'] = {'MOVE_FILE':'./data/move.json'} 
 config_dict['scene'] = {"OUTPUT_DIR":'./images/', "FILE_TYPE":'JPEG', "RES_X":512, "RES_Y":512, "side_length":0.106768, "z_board":0.0009}
 
 @contextmanager
@@ -58,6 +58,7 @@ class Renderer:
     def update_camera(self, X, Z):
         self.camera.location.x += X/self.R
         self.camera.location.z += Z/self.R
+        self.camera.location = (self.R/self.camera.location.length)*self.camera.location
 
     def render_scene(self,filename):
         bpy.context.scene.render.filepath = os.path.join(self._settings['OUTPUT_DIR'],filename)

@@ -10,10 +10,10 @@ z_board = 0.0009
 
 [data]
 DATASET = './data/Dec18.pgn'
-MOVE_FILE = './cache/move.json'
+MOVE_FILE = './data/move.json'
 LABEL_FILE = './data/labels_all.json'
 FEN_FILE = './data/fen_all.json'
-MAX_BOARDS = 220000 
+MAX_BOARDS = 100
 
 [constants]
 CHESS_BOARD_LEN = 8
