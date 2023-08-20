@@ -13,7 +13,7 @@ DATASET = './data/Dec18.pgn'
 MOVE_FILE = './data/move.json'
 LABEL_FILE = './data/labels_all.json'
 FEN_FILE = './data/fen_all.json'
-MAX_BOARDS = 100
+MAX_BOARDS = 230000
 
 [constants]
 CHESS_BOARD_LEN = 8
