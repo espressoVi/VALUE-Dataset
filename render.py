@@ -1,4 +1,5 @@
 import bpy
+from bpy_extras.object_utils import world_to_camera_view as wcv
 #import toml
 import os
 import sys
@@ -7,9 +8,10 @@ from contextlib import contextmanager
 from mathutils import Vector
 import json
 from time import perf_counter
+from collections import OrderedDict
 
 config_dict = {}
-config_dict['data'] = {'MOVE_FILE':'./data/move.json'} 
+config_dict['data'] = {'MOVE_FILE':'./data/move.json', 'BB_FILE':'./data/bb_all.json'}
 config_dict['scene'] = {"OUTPUT_DIR":'./images/', "FILE_TYPE":'JPEG', "RES_X":512, "RES_Y":512, "side_length":0.106768, "z_board":0.0009}
 
 @contextmanager
@@ -54,12 +56,9 @@ class Renderer:
             print(f"Rendering image #{int(i)-self.low} of {self.high-self.low}, took {end - start:.2f}s, Total time = {(end - g_start)/60:.1f} minutes", end="\r")
         print()
         bpy.ops.wm.quit_blender()
-
     def update_camera(self, X, Z):
-        self.camera.location.x += X/self.R
-        self.camera.location.z += Z/self.R
-        self.camera.location = (self.R/self.camera.location.length)*self.camera.location
-
+        self.camera.location += Vector((X/self.R, 0, Z/self.R))
+        self.camera.location *= (self.R/self.camera.location.length)
     def render_scene(self,filename):
         bpy.context.scene.render.filepath = os.path.join(self._settings['OUTPUT_DIR'],filename)
         with stdout_redirected():
@@ -74,6 +73,38 @@ class Renderer:
         moves = {key:val for key,val in moves.items() if self.low <= int(key) < self.high}
         return moves
 
+class BoundingBoxes(Renderer):
+    def __init__(self, low, high):
+        super().__init__(low, high)
+        self.camera = bpy.context.scene.camera
+    def update_camera(self, X, Z):
+        self.camera.location += Vector((X/self.R, 0, Z/self.R))
+        self.camera.location *= (self.R/self.camera.location.length)
+        bpy.context.view_layer.update()
+    def get_boxes(self):
+        res = {}
+        for i,moves in self._read_moves().items():
+            self._reset()
+            self.update_camera(*moves['Camera'])
+            for name, translation in filter(lambda x: len(x[0]) == 2, moves.items()):
+                bpy.data.objects[name].location = Vector(translation)
+            res[i] = self._get_coordinates(moves)
+        self._write_bb(res)
+        bpy.ops.wm.quit_blender()
+    def _write_bb(self, res):
+        with open(config_dict['data']['BB_FILE'], "w") as f:
+            json.dump(OrderedDict(sorted(res.items())), f, indent = 2)
+    def _get_coordinates(self, moves):
+        res = {}
+        x_res, y_res = config_dict['scene']['RES_X'], config_dict['scene']['RES_Y']
+        for name in filter(lambda x: len(x) == 2, moves.keys()):
+            obj = bpy.data.objects[name]
+            co_2d = wcv(bpy.context.scene, self.camera, obj.location)
+            x_pos, y_pos = round(x_res*co_2d.x), round(y_res*co_2d.y)
+            res[name] = [x_pos, 512 - y_pos]
+        return res
+
 if __name__ == "__main__":
     low, high = int(sys.argv[-2]), int(sys.argv[-1])
     Renderer(low, high).apply_moves()
+    BoundingBoxes(low, high).get_boxes()

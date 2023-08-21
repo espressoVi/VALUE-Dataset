@@ -7,12 +7,16 @@ RES_X = 512
 RES_Y = 512
 side_length = 0.106768
 z_board = 0.0009
+boxes_x = 30
+boxes_y = {P = 40, Q = 70, K = 70, N = 60, B = 60, R = 50, p = 40, q = 70, k = 70, n = 60, b = 60, r = 50}
 
 [data]
 DATASET = './data/Dec18.pgn'
 MOVE_FILE = './data/move.json'
 LABEL_FILE = './data/labels_all.json'
 FEN_FILE = './data/fen_all.json'
+BB_FILE = './data/bb_all.json'
+BoBo_FILE = './data/bounding_boxes_all.json'
 MAX_BOARDS = 230000
 
 [constants]

@@ -3,6 +3,7 @@ logs/
 assets/*
 textures/*
 images/*
+tests/*
 cache/*
 *.blend1
 statistics.py
