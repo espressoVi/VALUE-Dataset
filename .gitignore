@@ -1,12 +1,11 @@
+rendering/assets/*
+rendering/textures/*
+rendering/images/*
+rendering/tests/*
+rendering/*.blend1
+rendering/data/*
+baselines/data/*
 data/*
-logs/
-assets/*
-textures/*
-images/*
-tests/*
-cache/*
-*.blend1
-statistics.py
 
 __pycache__/
 *.py[cod]
