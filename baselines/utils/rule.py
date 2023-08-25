@@ -74,8 +74,7 @@ class Rules:
         return np.any(_p)
     def _validate(self, arr:np.ndarray) -> np.ndarray:
         assert isinstance(arr, np.ndarray)
-        arr = arr.astype(int)
-        assert arr.shape == (self.board_len, self.board_len)
+        arr = arr.astype(int).reshape(self.board_len, self.board_len)
         assert np.amax(arr) <= 12 and np.amin(arr) >= 0
         return arr
     def _count_pieces(self, arr: np.ndarray) -> dict:

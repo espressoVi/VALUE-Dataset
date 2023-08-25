@@ -4,7 +4,7 @@ rendering/images/*
 rendering/tests/*
 rendering/*.blend1
 rendering/data/*
-baselines/data/*
+baselines/logs/*
 data/*
 
 __pycache__/
