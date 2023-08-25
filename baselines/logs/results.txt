@@ -4,3 +4,5 @@ RESNET-100
 F1 = 0.9660 | sF1 = 0.8687 | EM = 0.6040 | Contradiction = 0.1113 |
 VIT-small(16) (224)
 F1 = 0.8728 | sF1 = 0.6300 | EM = 0.2480 | Contradiction = 0.3110 |
+VIT-large(32) (384)
+F1 = 0.9072 | sF1 = 0.7113 | EM = 0.3224 | Contradiction = 0.2399 |

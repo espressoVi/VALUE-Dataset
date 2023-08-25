@@ -10,7 +10,7 @@
 * C2 - Get final scene.
 * C3 - Save images and corresponding label information.
 * Check  if scene works in 204.
-* Generated 329942 images and corresponding labels.
+* Generated 219967 images and corresponding labels and bounding boxes.
 * Dataset generation, cleanup, etc completed.
 
 ## Usage

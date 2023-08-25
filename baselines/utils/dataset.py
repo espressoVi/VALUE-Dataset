@@ -15,14 +15,16 @@ config = toml.load("config.toml")
 files = config['files']
 
 class ChessVision(Dataset):
-    def __init__(self, train = True):
+    def __init__(self, train = True, size = 512, bbox = False):
         self.train = train
+        self.size = size
+        self.piece2num = config["constants"]["fen_pieces"]
         self.img_dir = files['train_images'] if train else files['test_images']
         self.labels = self._read_json(files['train_labels'] if train else files['test_labels'])
         self.bb = self._read_json(files['train_bb'] if train else files['test_bb'])
         self.idxs = list(self.labels.keys())
-        self._preprocess =  transforms.Compose([transforms.CenterCrop(512),
-                            transforms.Normalize([0.539, 0.511, 0.509], [0.206, 0.177, 0.167]), transforms.Resize(224)])
+        self._preprocess =  transforms.Compose([transforms.Normalize([0.539, 0.511, 0.509], [0.206, 0.177, 0.167]),
+                                                transforms.Resize(size)])
     def _get_image(self, sidx):
         fname = os.path.join(self.img_dir, f"CV_{int(sidx):07d}.jpg")
         try:
@@ -38,7 +40,10 @@ class ChessVision(Dataset):
         sidx = self.idxs[idx]
         label = torch.tensor(np.array(self.labels[sidx]).flatten())
         image = self._get_image(sidx)
-        return image, label
+        if not bbox:
+            return image, label
+        bbox = (torch.tensor(self.bb[sidx])*(512/self.size)).int()
+        return image, label, bbox
     @staticmethod
     def _read_json(filename):
         with open(filename, "r") as f:

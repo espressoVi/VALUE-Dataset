@@ -58,7 +58,7 @@ class ResNet101(nn.Module):
 class ViT(nn.Module):
     def __init__(self):
         super().__init__()
-        self.name = "vit_b_32"
+        self.name = "vit_small"
         self.class_num = len(config['constants']['fen_pieces'])
         board_dim = config['constants']['CHESS_BOARD_LEN']
         self.fex = ViTModel.from_pretrained("google/vit-base-patch16-224")
