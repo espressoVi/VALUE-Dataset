@@ -9,9 +9,10 @@ from mathutils import Vector
 import json
 from time import perf_counter
 from collections import OrderedDict
+from itertools import product
 
 config_dict = {}
-config_dict['data'] = {'MOVE_FILE':'./data/move.json', 'BB_FILE':'./data/bb_all.json'}
+config_dict['data'] = {'MOVE_FILE':'./data/move.json', 'BB_FILE':'./data/bb_all.json', 'GRID_FILE':'./data/grid_all.json'}
 config_dict['scene'] = {"OUTPUT_DIR":'./images/', "FILE_TYPE":'JPEG', "RES_X":512, "RES_Y":512, "side_length":0.106768, "z_board":0.0009}
 
 @contextmanager
@@ -101,10 +102,42 @@ class BoundingBoxes(Renderer):
             obj = bpy.data.objects[name]
             co_2d = wcv(bpy.context.scene, self.camera, obj.location)
             x_pos, y_pos = round(x_res*co_2d.x), round(y_res*co_2d.y)
-            res[name] = [x_pos, 512 - y_pos]
+            res[name] = [x_pos, y_res - y_pos]
         return res
+class Grid(BoundingBoxes):
+    def __init__(self, low, high):
+        super().__init__(low, high)
+        self.board = self._get_grid_points()
+    def _get_grid_points(self):
+        board_dim, side_len = 8, config_dict['scene']['side_length']
+        result = np.zeros((board_dim, board_dim, 3))
+        result[:,:,2] = config_dict['scene']['z_board'] #SET Z value
+        result[:,:,0] = np.repeat(np.expand_dims(np.arange(-board_dim//2+0.5,board_dim//2,1), axis = 0), board_dim, axis=0)*side_len
+        result[:,:,1] = np.repeat(np.expand_dims(np.arange(board_dim//2-0.5,-board_dim//2,-1), axis = 1), board_dim, axis=1)*side_len
+        return result
+    def get_grid(self):
+        res = {}
+        for i,moves in self._read_moves().items():
+            self._reset()
+            self.update_camera(*moves['Camera'])
+            x,y = self._get_coordinates()
+            res[i] = [(int(i),int(j)) for i,j in zip(x.flatten(),y.flatten())]
+        self._write_grid(res)
+        bpy.ops.wm.quit_blender()
+    def _get_coordinates(self):
+        res1, res2 = np.zeros((8,8), dtype = int), np.zeros((8,8), dtype = int)
+        x_res, y_res = config_dict['scene']['RES_X'], config_dict['scene']['RES_Y']
+        for i,j in product(range(8),range(8)):
+            co_2d = wcv(bpy.context.scene, self.camera, Vector(self.board[i,j,:]))
+            x_pos, y_pos = round(x_res*co_2d.x), round(y_res*co_2d.y)
+            res1[i,j], res2[i,j] = x_pos, y_res-y_pos
+        return res1,res2
+    def _write_grid(self, res):
+        with open(config_dict['data']['GRID_FILE'], "w") as f:
+            json.dump(OrderedDict(sorted(res.items())), f, indent = 2)
 
 if __name__ == "__main__":
     low, high = int(sys.argv[-2]), int(sys.argv[-1])
-    Renderer(low, high).apply_moves()
-    BoundingBoxes(low, high).get_boxes()
+    #Renderer(low, high).apply_moves()
+    #BoundingBoxes(low, high).get_boxes()
+    Grid(low, high).get_grid()
