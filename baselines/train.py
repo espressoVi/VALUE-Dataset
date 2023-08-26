@@ -57,7 +57,7 @@ def evaluate(model, dataset):
     dataloader = DataLoader(dataset, shuffle = False, batch_size = config['models']['batch'], )
     for im, lab in tqdm(dataloader, desc = "Evaluating"):
         with torch.no_grad():
-            out = model(im.to(device), lab.to(device))
+            out = model(im.to(device))
         outputs.extend(out.detach().cpu().numpy())
         labels.extend(lab.detach().cpu().numpy())
     outputs, labels = np.array(outputs), np.array(labels)
