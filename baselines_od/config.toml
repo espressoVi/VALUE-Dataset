@@ -1,4 +1,4 @@
-name = "Baselines"
+name = "Baselines Object Detector"
 
 [files]
 train_images = "../data/train/"

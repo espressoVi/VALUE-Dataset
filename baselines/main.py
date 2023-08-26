@@ -2,7 +2,6 @@
 import torch
 from utils.dataset import ChessVision
 from models.classifiers import ResNet50, ResNet101, ViT, ViTLarge
-from models.object_detectors import FRCNN
 from train import train, evaluate
 import numpy as np
 from utils.metrics import Metrics
