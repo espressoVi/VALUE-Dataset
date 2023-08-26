@@ -1,0 +1,24 @@
+name = "Baselines"
+
+[files]
+train_images = "../data/train/"
+test_images = "../data/test"
+train_labels = "../data/labels/train_labels.json"
+test_labels = "../data/labels/test_labels.json"
+train_bb = "../data/labels/train_bounding_boxes.json"
+test_bb = "../data/labels/test_bounding_boxes.json"
+
+[constants]
+CHESS_BOARD_LEN = 8
+EMPTY = 'x'
+fen_pieces = {x = 0, P = 1, N = 2, B = 3, R = 4, Q = 5, K = 6, p = 7, n = 8, b = 9, r = 10, q = 11, k = 12}
+
+[models]
+lr = 1e-4
+epochs = 2
+batch = 32
+
+[resnet]
+name = "resnet100"
+[yolo]
+name = "yolov5"

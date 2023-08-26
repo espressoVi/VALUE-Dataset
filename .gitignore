@@ -5,6 +5,7 @@ rendering/tests/*
 rendering/*.blend1
 rendering/data/*
 baselines/logs/*
+baselines_od/logs/*
 data/*
 
 __pycache__/
