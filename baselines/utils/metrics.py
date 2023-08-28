@@ -9,13 +9,13 @@ class Metrics:
     def contradiction_count(self, predicts):
         res = 0
         for i in predicts:
-            valid, string = self.rules.check(i)
+            valid = self.rules.check(i)
             res += 0 if valid else 1
         return res/len(predicts)
     def strict_f_measure(self, labels, outputs):
         f1 = 0
         for pred, lab in zip(outputs, labels):
-            valid, string = self.rules.check(pred)
+            valid = self.rules.check(pred)
             if not valid:
                 continue
             n_gt, n_pred = np.where(lab>0, 1, 0).sum(), np.where(pred>0, 1, 0).sum()

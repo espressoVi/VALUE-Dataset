@@ -3,6 +3,7 @@ import numpy as np
 from collections import Counter
 import toml, json
 from tqdm import tqdm
+from itertools import combinations
 
 config = toml.load("config.toml")
 
@@ -18,36 +19,80 @@ class Rules:
         arr = self._validate(arr)
         black, white = self._split_black_white(arr)
         if not self._king_okay(black, white):
-            return False,"King missing or too close"
+            return False
         if np.where(black > 0, 1, 0).sum() > 16 or np.where(white > 0, 1, 0).sum() > 16:
-            return False, "Too many pieces"
+            return False
         black_counts, white_counts = self._count_pieces(black), self._count_pieces(white)
         if black_counts['p'] > 8 or white_counts['P'] > 8:
-            return False, "Too many pawns"
+            return False
         if self._first_or_last_rank_pawn(arr):
-            return False, "Pawn in rank 1,8"
+            return False
         if black_counts['p'] == 8:  #No promotions
             if not self._check_counts(black_counts, promotion = False):
-                return False, "Too many pieces"
-            if black_counts['b'] == 2 and not self._check_bishop(black):
-                return False, "Wrong bishop positions"
+                return False
+            if black_counts['b'] == 2 and not self._check_bishop(black, 'b'):
+                return False
         elif black_counts['p'] < 8:
             if not self._check_counts(black_counts, promotion = True):
-                return False, "Too many pieces"
+                return False
         if white_counts['P'] == 8:  #No promotions
             if not self._check_counts(white_counts, promotion = False):
-                return False, "Too many pieces"
-            if white_counts['B'] == 2 and not self._check_bishop(white):
-                return False, "Wrong bishop positions"
+                return False
+            if white_counts['B'] == 2 and not self._check_bishop(white,'B'):
+                return False
         elif white_counts['P'] < 8:
             if not self._check_counts(white_counts, promotion = True):
-                return False, "Too many pieces"
-        return True, "Valid"
-    def _check_bishop(self, arr):
-        x,y = np.where(arr == self.piece2num['b'])
-        i,j = np.where(arr == self.piece2num['B'])
-        i,j = (i,j) if len(i)==2 else (x,y)
-        res = (i+j)%2
+                return False
+        return True
+    def analyze(self, arr):
+        arr = self._validate(arr)
+        an = {"count":0,"loc":0,"ifcount":0,"ifloc":0}
+        black, white = self._split_black_white(arr)
+        black_counts, white_counts = self._count_pieces(black), self._count_pieces(white)
+        """ Counting """
+        if np.where(black == self.piece2num['k'], 1, 0).sum() != 1:
+            an["count"] += 1
+        if np.where(white == self.piece2num['K'], 1, 0).sum() != 1:
+            an["count"] += 1
+        if np.where(black > 0, 1, 0).sum() > 16:
+            an["count"] += 1
+        if np.where(white > 0, 1, 0).sum() > 16:
+            an["count"] += 1
+        if black_counts['p'] > 8:
+            an["count"] += 1
+        if white_counts['P'] > 8:
+            an["count"] += 1
+        """ Localizing """
+        if self._first_or_last_rank_pawn(arr):
+            _p = np.logical_or(np.where(np.append(arr[0], arr[-1]) == self.piece2num['p'], True, False), 
+                           np.where(np.append(arr[0], arr[-1]) == self.piece2num['P'], True, False))
+            an["loc"]+=_p.astype(int).sum()
+        x = zip(*np.where(black == self.piece2num['k']))
+        y = zip(*np.where(white == self.piece2num['K']))
+        kings = list(x)+list(y)
+        for k,K in combinations(kings,2):
+            x_d, y_d = np.abs(k[0] - K[0]), np.abs(k[1] - K[1])
+            if x_d < 2 and y_d < 2:
+                an["loc"]+=1
+        """ Conditional Counting """
+        if black_counts['p'] == 8 and not self._check_counts(black_counts, promotion = False):
+            an["ifcount"]+=1 
+        if white_counts['P'] == 8 and not self._check_counts(white_counts, promotion = False):
+            an["ifcount"]+=1 
+        if black_counts['p'] < 8 and not self._check_counts(black_counts, promotion = True):
+            an["ifcount"]+=1 
+        if white_counts['P'] < 8 and not self._check_counts(white_counts, promotion = True):
+            an["ifcount"]+=1 
+        """ Conditional localizing """
+        if black_counts['p'] == 8 and black_counts['b'] == 2 and not self._check_bishop(black,'b'):
+            an["ifloc"]+=1
+        if white_counts['P'] == 8 and white_counts['B'] == 2 and not self._check_bishop(white,'B'):
+            an["ifloc"]+=1
+        return an
+        
+    def _check_bishop(self, arr, col):
+        x,y = np.where(arr == self.piece2num[col])
+        res = (x+y)%2
         return res[0] != res[-1]
     def _check_counts(self, counts, promotion = False):
         if not promotion:

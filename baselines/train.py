@@ -4,8 +4,8 @@ import toml
 import torch
 from tqdm import tqdm
 from torch.optim import AdamW
-from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import numpy as np
 from utils.metrics import Metrics
 
@@ -16,7 +16,7 @@ def train(model, train_dataset, test_dataset ):
     name = model.name
     optimizer_parameters = model.parameters()
     optimizer = AdamW(optimizer_parameters,lr=config['models']['lr'], eps=1e-8, weight_decay = 1e-4)
-    scheduler = ReduceLROnPlateau(optimizer, mode = 'max', factor = 0.1, patience = 1)
+    scheduler = ReduceLROnPlateau(optimizer, mode = 'max', factor = 0.1)
     train_dataloader = DataLoader(train_dataset, shuffle = True, batch_size = config['models']['batch'], )
     best_score = 0
     epochs = config['models']['epochs']
@@ -43,7 +43,8 @@ def train(model, train_dataset, test_dataset ):
         outputs, labels = np.array(outputs), np.array(labels)
         f1 = Metrics().metrics['F1'](labels, outputs)
         train_metrics = Metrics().eval_and_show(labels, outputs)
-        test_metrics = evaluate(model, test_dataset)
+        toutputs, tlabels = infer(model, test_dataset)
+        test_metrics = Metrics().eval_and_show(tlabels, toutputs)
         print('Train : ', train_metrics)
         print('Test :', test_metrics)
         scheduler.step(f1)
@@ -51,7 +52,7 @@ def train(model, train_dataset, test_dataset ):
     torch.save(model.state_dict(), f"./logs/{name}_chkpt.pth")
     return model
 
-def evaluate(model, dataset):
+def infer(model, dataset):
     model.eval()
     outputs, labels = [],[]
     dataloader = DataLoader(dataset, shuffle = False, batch_size = config['models']['batch'], )
@@ -61,4 +62,4 @@ def evaluate(model, dataset):
         outputs.extend(out.detach().cpu().numpy())
         labels.extend(lab.detach().cpu().numpy())
     outputs, labels = np.array(outputs), np.array(labels)
-    return Metrics().eval_and_show(labels, outputs)
+    return outputs, labels

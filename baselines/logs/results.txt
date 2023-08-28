@@ -1,3 +1,5 @@
+VGG-16
+F1 = 0.8804 | sF1 = 0.6558 | EM = 0.2630 | Contradiction = 0.2870 |
 RESNET-50
 F1 = 0.9595 | sF1 = 0.8494 | EM = 0.5627 | Contradiction = 0.1278 |
 RESNET-100
@@ -6,3 +8,5 @@ VIT-small(16) (224)
 F1 = 0.8728 | sF1 = 0.6300 | EM = 0.2480 | Contradiction = 0.3110 |
 VIT-large(32) (384)
 F1 = 0.9072 | sF1 = 0.7113 | EM = 0.3224 | Contradiction = 0.2399 |
+SWIN
+F1 = 0.9845 | sF1 = 0.9380 | EM = 0.8030 | Contradiction = 0.0522 |
