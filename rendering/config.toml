@@ -16,7 +16,6 @@ MOVE_FILE = './data/move.json'
 LABEL_FILE = './data/labels_all.json'
 FEN_FILE = './data/fen_all.json'
 BB_FILE = './data/bb_all.json'
-GRID_FILE = './data/grid_all.json'
 BoBo_FILE = './data/bounding_boxes_all.json'
 MAX_BOARDS = 230000
 

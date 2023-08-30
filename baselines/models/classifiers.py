@@ -4,8 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import vgg16, VGG16_Weights
-from torchvision.models.resnet import resnet50, ResNet50_Weights
-from torchvision.models.resnet import resnet101, ResNet101_Weights
+from torchvision.models.resnet import resnet50, ResNet50_Weights, resnet101, ResNet101_Weights
 from transformers import ViTModel, SwinModel
 
 config = toml.load("config.toml")

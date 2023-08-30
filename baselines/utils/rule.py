@@ -46,50 +46,38 @@ class Rules:
         return True
     def analyze(self, arr):
         arr = self._validate(arr)
-        an = {"count":0,"loc":0,"ifcount":0,"ifloc":0}
+        an = np.zeros(8)
         black, white = self._split_black_white(arr)
         black_counts, white_counts = self._count_pieces(black), self._count_pieces(white)
         """ Counting """
-        if np.where(black == self.piece2num['k'], 1, 0).sum() != 1:
-            an["count"] += 1
-        if np.where(white == self.piece2num['K'], 1, 0).sum() != 1:
-            an["count"] += 1
-        if np.where(black > 0, 1, 0).sum() > 16:
-            an["count"] += 1
-        if np.where(white > 0, 1, 0).sum() > 16:
-            an["count"] += 1
-        if black_counts['p'] > 8:
-            an["count"] += 1
-        if white_counts['P'] > 8:
-            an["count"] += 1
-        """ Localizing """
-        if self._first_or_last_rank_pawn(arr):
-            _p = np.logical_or(np.where(np.append(arr[0], arr[-1]) == self.piece2num['p'], True, False), 
-                           np.where(np.append(arr[0], arr[-1]) == self.piece2num['P'], True, False))
-            an["loc"]+=_p.astype(int).sum()
-        x = zip(*np.where(black == self.piece2num['k']))
-        y = zip(*np.where(white == self.piece2num['K']))
-        kings = list(x)+list(y)
-        for k,K in combinations(kings,2):
-            x_d, y_d = np.abs(k[0] - K[0]), np.abs(k[1] - K[1])
-            if x_d < 2 and y_d < 2:
-                an["loc"]+=1
-        """ Conditional Counting """
-        if black_counts['p'] == 8 and not self._check_counts(black_counts, promotion = False):
-            an["ifcount"]+=1 
-        if white_counts['P'] == 8 and not self._check_counts(white_counts, promotion = False):
-            an["ifcount"]+=1 
-        if black_counts['p'] < 8 and not self._check_counts(black_counts, promotion = True):
-            an["ifcount"]+=1 
-        if white_counts['P'] < 8 and not self._check_counts(white_counts, promotion = True):
-            an["ifcount"]+=1 
+        an[0] += np.abs(np.where(black == self.piece2num['k'], 1, 0).sum()-1)
+        an[0] += np.abs(np.where(white == self.piece2num['K'], 1, 0).sum()-1)
+        kings = list(zip(*np.where(black == self.piece2num['k']))) + list(zip(*np.where(white == self.piece2num['K'])))
+        an[1] += np.sum([((np.abs(k[0] - K[0])<2) and (np.abs(k[1] - K[1])<2)) for k,K in combinations(kings,2)])
+        an[2] += max(0,(np.where(black > 0, 1, 0).sum()-16))
+        an[2] += max(0,(np.where(white > 0, 1, 0).sum()-16))
+        an[3] += max(0,black_counts['p']-8)
+        an[3] += max(0,white_counts['P']-8)
+        an[4] += np.logical_or(np.where(np.append(arr[0], arr[-1]) == self.piece2num['p'], True, False),
+                           np.where(np.append(arr[0], arr[-1]) == self.piece2num['P'], True, False)).sum()
+        if black_counts['p'] == 8:
+            an[5] += max(0,black_counts['b']-2) + max(0,black_counts['r']-2) + max(0,black_counts['n']-2) + max(0,black_counts['q']-1)
+        elif black_counts['p'] < 8:
+            extra = (max(0,black_counts['q'] - 1) + max(0,black_counts['b'] -2) 
+                     + max(0,black_counts['n'] - 2) + max(0,black_counts['r']-2))
+            an[6] += max(0,extra - (8-black_counts['p']))
+        if white_counts['P'] == 8:
+            an[5] += max(0,white_counts['B']-2) + max(0,white_counts['R']-2) + max(0,white_counts['N']-2) + max(0,white_counts['Q']-1)
+        elif white_counts['P'] < 8:
+            extra = (max(0,white_counts['Q'] - 1) + max(0,white_counts['B'] -2) 
+                     + max(0,white_counts['N'] - 2) + max(0,white_counts['R']-2))
+            an[6] += max(0,extra - (8-white_counts['P']))
         """ Conditional localizing """
-        if black_counts['p'] == 8 and black_counts['b'] == 2 and not self._check_bishop(black,'b'):
-            an["ifloc"]+=1
-        if white_counts['P'] == 8 and white_counts['B'] == 2 and not self._check_bishop(white,'B'):
-            an["ifloc"]+=1
+        if black_counts['p'] == 8 and black_counts['b'] == 2:
+            an[7] += 1 if not self._check_bishop(black,'b') else 0
+        if white_counts['P'] == 8 and white_counts['B'] == 2:
+            an[7] += 1 if not self._check_bishop(white,'B') else 0
         return an
-        
     def _check_bishop(self, arr, col):
         x,y = np.where(arr == self.piece2num[col])
         res = (x+y)%2

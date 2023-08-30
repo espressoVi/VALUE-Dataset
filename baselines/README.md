@@ -2,15 +2,14 @@
 
 This folder contains code to predict chess board positions from corresponding images.
 
-## Done:
-  - Seperate train, test.
-  - Write data-loader, related utils - torchvision.
-  - Download models, and finetune.
-## To-Do:
-  - Figure out object detection.
+## Usage:
+
+  - Update filenames in config.toml
+  - Run with
+
+    ```python main.py```
 
 ## Files:
-
   - main.py
   - train.py            -> Training routine.
   - README.md           -> This file.
@@ -20,4 +19,3 @@ This folder contains code to predict chess board positions from corresponding im
     - metrics.py        -> Implements several multi-target metrics.
   - model
     - classifiers.py                -> Classifier models.
-    - object_detectors.py           -> Object detector models.
