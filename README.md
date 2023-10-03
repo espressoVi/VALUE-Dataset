@@ -1,4 +1,4 @@
-# ChessVision - A dataset for logicaly coherent multi-label classification.
+# ChessVision - A dataset for logically coherent multi-label classification.
 ---
 ## Abstract
 
