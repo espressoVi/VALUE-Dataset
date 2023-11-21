@@ -1,7 +1,7 @@
 # ChessVision - A dataset for logically coherent multi-label classification.
 ---
 This repository contains code for the paper at (https://www.arxiv.org/dummylink)
-- Author : [Soumadeep Saha](https://www.isical.ac.in/~soumadeep.saha_r), [Utpal Garain](https://www.isical.ac.in/~utpal)
+- Authors : [Soumadeep Saha](https://www.isical.ac.in/~soumadeep.saha_r), [Utpal Garain](https://www.isical.ac.in/~utpal).
 
 ## Abstract
 
@@ -17,8 +17,8 @@ Starting with early successes in computer vision tasks, deep learning based tech
   - It takes 4+ days to generate 200,000 images on a 32 core CPU (AMD Threadripper).
 
 ### Download data
-  - The generated train/test set along with all labels can be found [here-link removed for anonymous review](https://zenodo.org/record/#)
-  - The DOI for the dataset is 10.5281/zenodo.0 (removed for anonymous review)
+  - The generated train/test set along with all labels can be found [here](https://zenodo.org/records/8278015).
+  - The DOI for the dataset is 10.5281/zenodo.8278014.
   - Checksum md5:933bda0043415922c1f862b417e9317a
   - The dataset is 18.5 GB
 
