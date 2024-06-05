@@ -27,4 +27,4 @@ Starting with early successes in computer vision tasks, deep learning based tech
   - Follow instructions in baselines/README.md
 
 ## Training graphs
-[training loss graph](./train.png)
+![training loss graph](./train.png)
